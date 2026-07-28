@@ -37,8 +37,7 @@ func (q *Queue) Enqueue(job job.Job) {
 }
 
 func (q *Queue) Dequeue() job.Job {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+
 	return <-q.jobs
 }
 func (q *Queue) MarkRunning(id string) {
@@ -65,6 +64,6 @@ func (q *Queue) GetStatus(id string) (Status, bool) {
 	if !ok {
 		fmt.Println("id is not exist")
 	}
-	return status, true
+	return status, ok
 
 }
