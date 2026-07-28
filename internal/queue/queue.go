@@ -29,13 +29,25 @@ func NewQueue(size int) *Queue {
 
 func (q *Queue) Enqueue(job job.Job) {
 	q.mu.Lock()
-	defer q.mu.Unlock()
-
 	q.status[job.ID] = Pending
+	q.mu.Unlock()
 
 	q.jobs <- job
 }
 
 func (q *Queue) Dequeue() job.Job {
 	return <-q.jobs
+}
+func (q *Queue) MarkRunning(id string) {
+	q.status[id] = Running
+}
+func (q *Queue) MarkFailed(id string) {
+	q.status[id] = Failed
+}
+func (q *Queue) MarkDone(id string) {
+	q.status[id] = Done
+}
+func (q *Queue) GetStatus(id string) Status {
+	return q.status[id]
+
 }
