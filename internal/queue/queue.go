@@ -21,6 +21,11 @@ type Queue struct {
 }
 
 func (q *Queue) Enqueue(job job.Job) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	q.status[job.ID] = Pending
+
 	q.jobs <- job
 }
 
