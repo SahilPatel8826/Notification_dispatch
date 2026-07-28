@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"fmt"
 	"notification_dispatch/internal/job"
 	"sync"
 )
@@ -47,7 +48,12 @@ func (q *Queue) MarkFailed(id string) {
 func (q *Queue) MarkDone(id string) {
 	q.status[id] = Done
 }
-func (q *Queue) GetStatus(id string) Status {
-	return q.status[id]
+func (q *Queue) GetStatus(id string) (Status, bool) {
+	status, ok := q.status[id]
+
+	if !ok {
+		fmt.Println("id is not exist")
+	}
+	return status, true
 
 }
