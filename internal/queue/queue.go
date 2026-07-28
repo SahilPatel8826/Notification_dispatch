@@ -20,6 +20,13 @@ type Queue struct {
 	mu     sync.RWMutex
 }
 
+func NewQueue(size int) *Queue {
+	return &Queue{
+		jobs:   make(chan job.Job, size),
+		status: make(map[string]Status),
+	}
+}
+
 func (q *Queue) Enqueue(job job.Job) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
