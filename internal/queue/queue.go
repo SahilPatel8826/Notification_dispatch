@@ -49,6 +49,8 @@ func (q *Queue) MarkDone(id string) {
 	q.status[id] = Done
 }
 func (q *Queue) GetStatus(id string) (Status, bool) {
+	q.mu.RLock()
+	defer q.mu.RUnlock()
 	status, ok := q.status[id]
 
 	if !ok {
