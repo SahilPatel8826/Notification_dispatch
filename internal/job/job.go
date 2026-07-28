@@ -1,13 +1,23 @@
 package job
 
+type JobType string
+
+const (
+	Email JobType = "email"
+	SMS   JobType = "sms"
+	Push  JobType = "push"
+)
+
 type Job struct {
 	ID      string
-	Type    string // "email", "sms", "push"
-	Payload string // e.g. the message content
+	Type    JobType
+	Payload string
 }
 
-func (j *Job) NewJob(id, jobType, payload string) {
-	j.ID = id
-	j.Type = jobType
-	j.Payload = payload
+func NewJob(id string, jobType JobType, payload string) Job {
+	return Job{
+		ID:      id,
+		Type:    jobType,
+		Payload: payload,
+	}
 }
