@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"fmt"
 	"notification_dispatch/internal/job"
 	"sync"
 )
@@ -40,30 +39,17 @@ func (q *Queue) Dequeue() job.Job {
 
 	return <-q.jobs
 }
-func (q *Queue) MarkRunning(id string) {
+func (q *Queue) UpdateStatus(id string, status Status) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
-	q.status[id] = Running
+	q.status[id] = status
 }
-func (q *Queue) MarkFailed(id string) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-	q.status[id] = Failed
-}
-func (q *Queue) MarkDone(id string) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-	q.status[id] = Done
-}
+
 func (q *Queue) GetStatus(id string) (Status, bool) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	q.mu.RLock()
+	defer q.mu.RUnlock()
+
 	status, ok := q.status[id]
-
-	if !ok {
-		fmt.Println("id is not exist")
-	}
 	return status, ok
-
 }
