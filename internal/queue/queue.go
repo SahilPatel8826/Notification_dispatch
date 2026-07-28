@@ -37,20 +37,29 @@ func (q *Queue) Enqueue(job job.Job) {
 }
 
 func (q *Queue) Dequeue() job.Job {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	return <-q.jobs
 }
 func (q *Queue) MarkRunning(id string) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	q.status[id] = Running
 }
 func (q *Queue) MarkFailed(id string) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	q.status[id] = Failed
 }
 func (q *Queue) MarkDone(id string) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	q.status[id] = Done
 }
 func (q *Queue) GetStatus(id string) (Status, bool) {
-	q.mu.RLock()
-	defer q.mu.RUnlock()
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	status, ok := q.status[id]
 
 	if !ok {
