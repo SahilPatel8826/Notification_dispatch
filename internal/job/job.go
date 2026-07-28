@@ -6,7 +6,7 @@ type Job struct {
 	Payload string // e.g. the message content
 }
 
-func (j *Job) CreateJob(id, jobType, payload string) {
+func (j *Job) NewJob(id, jobType, payload string) {
 	j.ID = id
 	j.Type = jobType
 	j.Payload = payload
