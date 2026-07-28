@@ -2,10 +2,14 @@ package queue
 
 import "notification_dispatch/internal/job"
 
-func Enqueue(jobs chan Job, job job.Job) {
-	jobs <- job
+type Queue struct {
+	jobs chan job.Job
 }
-func Dequeue(jobs chan Job) Job {
-	job := <-jobs
-	return job
+
+func (q *Queue) Enqueue(job Job) {
+	q.jobs <- job
+}
+
+func (q *Queue) Dequeue() Job {
+	return <-q.jobs
 }
