@@ -6,46 +6,28 @@ import (
 	"notification_dispatch/internal/sender"
 )
 
-type Worker struct {
-	ID      int
-	Queue   *queue.Queue
-	Senders map[job.JobType]sender.Sender
+type Pool struct {
+	workers []*Worker
 }
 
-func NewWorker(
-	id int,
+func NewPool(
+	numWorkers int,
 	q *queue.Queue,
 	senders map[job.JobType]sender.Sender,
-) *Worker {
-	return &Worker{
-		ID:      id,
-		Queue:   q,
-		Senders: senders,
+) *Pool {
+
+	pool := &Pool{}
+
+	for i := 1; i <= numWorkers; i++ {
+		w := NewWorker(i, q, senders)
+		pool.workers = append(pool.workers, w)
 	}
+
+	return pool
 }
 
-func (w *Worker) Start() {
-	for {
-		// 1. Take a job from queue
-		jb := w.Queue.Dequeue()
-
-		// 2. Mark Running
-		w.Queue.UpdateStatus(jb.ID, queue.Running)
-
-		// 3. Find sender for job type
-		s, ok := w.Senders[jb.Type]
-		if !ok || s == nil {
-			w.Queue.UpdateStatus(jb.ID, queue.Failed)
-			continue
-		}
-
-		// 4. Send
-		err := s.Send(jb)
-
-		if err != nil {
-			w.Queue.UpdateStatus(jb.ID, queue.Failed)
-		} else {
-			w.Queue.UpdateStatus(jb.ID, queue.Done)
-		}
+func (p *Pool) Start() {
+	for _, worker := range p.workers {
+		go worker.Start()
 	}
 }
